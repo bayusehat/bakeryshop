@@ -155,7 +155,6 @@ class TransaksiController extends Controller
                     ->addColumn('action', function($row){
      
                            $btn = '
-                           <a href="javascript:void(0)" class="btn btn-warning"><i class="fas fa-file"></i></a>
                            <a href="'.url('transaksi/edit/'.$row->id_transaksi).'" class="btn btn-primary"><i class="fas fa-edit"></i></a>
                            <a href="javascript:void(0)" class="btn btn-danger" onclick="deleteTransaksi('.$row->id_transaksi.')"><i class="fas fa-trash"></i></a>
                            ';

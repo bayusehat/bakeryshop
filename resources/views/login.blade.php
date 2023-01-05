@@ -6,9 +6,19 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Login - Bakery Shop</title>
+        <title>Login - Box Cakes and Pastry</title>
         <link href="{{ asset('assets/css/styles.css') }}" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
+        <style>
+            body{
+                background-image: url('{{ url('assets/assets/img/bg.jpg') }}');
+                background-color: whitesmoke; /* Used if the image is unavailable */
+                height: 500px; /* You must set a specified height */
+                background-position: center; /* Center the image */
+                background-repeat: no-repeat; /* Do not repeat the image */
+                background-size: cover; /* Resize the background image to cover the entire container*/
+            }
+        </style>
     </head>
     <body class="bg-primary">
         <div id="layoutAuthentication">
@@ -24,18 +34,18 @@
                                             @if(session('success'))
                                                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                                                     <strong>Sukses!</strong> {{ Session::get('success')}}
-                                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                    {{-- <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                                         <span aria-hidden="true">&times;</span>
-                                                    </button>
+                                                    </button> --}}
                                                 </div>
                                                 <br>
                                             @endif
                                             @if(session('error'))
                                                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                                                     <strong>Gagal!</strong> {{ Session::get('error')}}
-                                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                    {{-- <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                                         <span aria-hidden="true">&times;</span>
-                                                    </button>
+                                                    </button> --}}
                                                 </div>
                                             @endif
                                         </div>
@@ -67,7 +77,7 @@
                                     </div>
                                     <div class="card-footer text-center py-3">
                                         {{--  <div class="small"><a href="register.html">Need an account? Sign up!</a></div>  --}}
-                                        Login page - Bakery Shop
+                                        Login page - Box Cakes and Pastry
                                     </div>
                                 </div>
                             </div>
@@ -79,7 +89,7 @@
                 <footer class="py-4 bg-light mt-auto">
                     <div class="container-fluid px-4">
                         <div class="d-flex align-items-center justify-content-between small">
-                            <div class="text-muted">Copyright &copy; Bakery Shop 2022</div>
+                            <div class="text-muted">Copyright &copy; Box Cakes and Pastry</div>
                             <div>
                                 <a href="#">Privacy Policy</a>
                                 &middot;

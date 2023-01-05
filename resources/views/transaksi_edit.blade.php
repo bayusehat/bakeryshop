@@ -14,18 +14,18 @@
                 @if(session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         <strong>Sukses!</strong> {{ Session::get('success')}}
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        {{-- <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
-                        </button>
+                        </button> --}}
                     </div>
                     <br>
                 @endif
                 @if(session('error'))
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <strong>Gagal!</strong> {{ Session::get('error')}}
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        {{-- <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
-                        </button>
+                        </button> --}}
                     </div>
                 @endif
             </div>
@@ -34,7 +34,7 @@
             </div>
             <div class="row">
                 <div class="col-md-4">
-                    <h5>Detail Trans</h5>
+                    <h5>Detail Transaksi</h5>
                     <table class="table">
                         <tr>
                             <td>No. Transaksi</td>
@@ -64,11 +64,11 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="card mb-4">
-                        <div class="card-header">
+                        <div class="card-header card-item">
                             <i class="fas fa-inventory"></i>
                             Item
                         </div>
-                        <div class="card-body">
+                        <div class="card-body overflow-auto">
                             @foreach ($item as $a)
                                 <ul class="list-group mb-3">
                                     <a href="javascript:void(0)" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" onclick="addItem({{ $a->id_item }})">
@@ -76,7 +76,14 @@
                                             {{ $a->nama_item }}
                                             <p><small>{{ $a->kategori->nama_kategori }}</small></p>
                                             <span class="badge badge-info badge-pill text-primary"> {{ $a->stok_item }}</span>
-                                            <span class="badge badge-danger badge-pill text-danger">Rp {{ number_format($a->harga_item,0,'','.') }}</span>
+                                            <span class="badge badge-danger badge-pill text-primary">Rp {{ number_format($a->harga_item,0,'','.') }}</span>
+                                            <span class="badge badge-warning badge-pill 
+                                            @if ($a->expired_item < date('Y-m-d'))
+                                                {{ 'text-danger'}}
+                                            @else
+                                                {{ 'text-success'}}
+                                            @endif
+                                            "> Exp. {{ date('d-m-Y',strtotime($a->expired_item)) }}</span>
                                         </div>
                                     <div class="image-parent">
                                         <img src="{{ asset('assets/assets/img/toast-bread-icon-design-free-vector.jpg') }}" class="img-fluid" style="width: 100px" alt="quixote">
@@ -106,16 +113,19 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($transaksi_detail as $td)
-                                        <tr>
-                                            <td>{{ $td->item->nama_item }}<input type='hidden' name='id_item[]' value='{{ $td->item->id_item }}' class='id'></td>
-                                            <td>{{ $td->item->kategori->nama_kategori }}<input type='hidden' name='id_kategori[]' value='{{ $td->item->kategori->id_kategori }}'></td>
-                                            <td><input type='hidden' name='harga_item[]' id='harga{{ $td->item->id_item }}' value='{{ $td->item->harga_item }}' class='harga'><span id='harga_sep{{ $td->item->id_item }}' class='harga_sep{{ $td->item->id_item }}'>{{ number_format($td->item->harga_item,0,'','.') }}</span></td>
-                                            <td><input type='number' name='qty[]' id='qty{{ $td->item->id_item }}' class='form-control form-control-sm qty' value='{{ $td->qty }}' onkeyup='change_quantity()'></td>
-                                            <td><input type='hidden' name='subtotal[]' id='subtotal{{ $td->item->id_item }}' value="{{ $td->subtotal }}" class='form-control form-control-sm subtotal' readonly><span class='subtotal_sep{{ $td->item->id_item }}'>{{ number_format($td->subtotal,0,'','.') }}</span></td>
-                                            <td><a href='javascript:void(0)' class='btn btn-danger deleteBtn'><i class='fas fa-trash'></i></a></td>
-                                        </tr>
-                                    @endforeach
+                                    @if (count($transaksi_detail) > 0)
+                                        @foreach ($transaksi_detail as $td)
+                                            <tr>
+                                                <td>{{ $td->item->nama_item }}<input type='hidden' name='id_item[]' value='{{ $td->item->id_item }}' class='id'></td>
+                                                <td>{{ $td->item->kategori->nama_kategori }}<input type='hidden' name='id_kategori[]' value='{{ $td->item->kategori->id_kategori }}'></td>
+                                                <td><input type='hidden' name='harga_item[]' id='harga{{ $td->item->id_item }}' value='{{ $td->item->harga_item }}' class='harga'><span id='harga_sep{{ $td->item->id_item }}' class='harga_sep{{ $td->item->id_item }}'>{{ number_format($td->item->harga_item,0,'','.') }}</span></td>
+                                                <td><input type='number' name='qty[]' id='qty{{ $td->item->id_item }}' class='form-control form-control-sm qty' value='{{ $td->qty }}' onkeyup='change_quantity()'></td>
+                                                <td><input type='hidden' name='subtotal[]' id='subtotal{{ $td->item->id_item }}' value="{{ $td->subtotal }}" class='form-control form-control-sm subtotal' readonly><span class='subtotal_sep{{ $td->item->id_item }}'>{{ number_format($td->subtotal,0,'','.') }}</span></td>
+                                                <td><a href='javascript:void(0)' class='btn btn-danger deleteBtn'><i class='fas fa-trash'></i></a></td>
+                                            </tr>
+                                        @endforeach
+                                    @endif
+                                    
                                 </tbody>
                             </table>
                         </div>

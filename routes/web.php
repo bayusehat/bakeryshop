@@ -16,13 +16,13 @@ use App\Http\Controllers\AuthController;
 */
 Route::get('/user/create','App\Http\Controllers\AuthController@createUser');
 Route::get('/check','App\Http\Controllers\ItemController@checkExpired');
-Route::group(['middleware' => ['ifLogged','web']], function () {
+Route::group(['middleware' => ['ifLogged']], function () {
     Route::get('/','App\Http\Controllers\AuthController@index');
     Route::post('/doLogin','App\Http\Controllers\AuthController@doLogin');
     Route::get('/doLogout','App\Http\Controllers\AuthController@doLogout');
 });
 
-Route::group(['middleware' => ['authLogin','web']], function () {
+Route::group(['middleware' => ['authLogin']], function () {
     Route::get('/dashboard','App\Http\Controllers\HomeController@index');
 
     //Item
@@ -53,4 +53,5 @@ Route::group(['middleware' => ['authLogin','web']], function () {
     Route::get('/user/status/{status}/{id}','App\Http\Controllers\AuthController@changeStatus');
 
     Route::get('/calculate/{id}/{type}','App\Http\Controllers\TransaksiController@calculateStok');
+    Route::post('/kategori/add','App\Http\Controllers\ItemController@selectAdd');
 });

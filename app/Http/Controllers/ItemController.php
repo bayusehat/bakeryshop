@@ -25,82 +25,6 @@ class ItemController extends Controller
 
     public function loadData(Request $request)
     {
-        // $status = $request->get('status');
-
-        // $whereLike = [
-        //     'nama_item',
-        //     'nama_kategori'
-        // ];
-
-        // $start  = $request->input('start');
-        // $length = $request->input('length');
-        // $order  = $whereLike[$request->input('order.0.column')];
-        // $dir    = $request->input('order.0.dir');
-        // $search = $request->input('search.value');
-
-        // $totalData = Item::with('kategori')->count();
-        // if (empty($search)) {
-        //     $queryData = Item::with('kategori')
-        //         ->offset($start)
-        //         ->limit($length)
-        //         ->orderBy($order, $dir)
-        //         ->get();
-        //     $totalFiltered = Item::with('kategori')->count();
-        // } else {
-        //     $queryData = Item::with(['kategori' => function($ktg) use ($search){
-        //         $ktg->orWhere('nama_kategori','like',"%{$search}%");
-        //         }])
-        //         ->where(function($query) use ($search) {
-        //             $query->where('nama_item', 'like', "%{$search}%");
-        //         })
-        //         ->offset($start)
-        //         ->limit($length)
-        //         ->orderBy($order, $dir)
-        //         ->get();
-        //     $totalFiltered = Item::with(['kategori' => function($ktg) use ($search){
-        //         $ktg->orWhere('nama_kategori','like',"%{$search}%");
-        //         }])
-        //         ->where(function($query) use ($search) {
-        //             $query->where('nama_item', 'like', "%{$search}%");
-        //         })
-        //         ->offset($start)
-        //         ->count();
-        // }
-
-        // $response['data'] = [];
-        // if($queryData <> FALSE) {
-        //     $nomor = $start + 1;
-        //     foreach ($queryData as $val) {
-        //             $response['data'][] = [
-        //                 $nomor,
-        //                 $val->nama_item,
-        //                 $val->kategori->nama_kategori,
-        //                 number_format($val->harga_item),
-        //                 $val->stok_item,
-        //                 $this->itemSold($val->id_item),
-        //                 $val->expired_item,
-        //                 $this->checkExpired($val->expired_item),
-        //                 '
-        //                 <a href="javascript:void(0)" class="btn btn-primary" onclick="editItem('.$val->id_item.')"><i class="fas fa-edit"></i></a>
-        //                 <a href="javascript:void(0)" class="btn btn-danger" onclick="deleteItem('.$val->id_item.')"><i class="fas fa-trash"></i></a>
-        //                 '
-        //             ];
-        //         $nomor++;
-        //     }
-        // }
-
-        // $response['recordsTotal'] = 0;
-        // if ($totalData <> FALSE) {
-        //     $response['recordsTotal'] = $totalData;
-        // }
-
-        // $response['recordsFiltered'] = 0;
-        // if ($totalFiltered <> FALSE) {
-        //     $response['recordsFiltered'] = $totalFiltered;
-        // }
-
-        // return response()->json($response);
-
         if ($request->ajax()) {
             $data = Item::with('kategori');
             return Datatables::of($data)
@@ -124,7 +48,7 @@ class ItemController extends Controller
        
                             return $btn;
                     })
-                    ->rawColumns(['action'])
+                    ->rawColumns(['action','check'])
                     ->make(true);
         }
     }
@@ -269,16 +193,16 @@ class ItemController extends Controller
     public static function checkExpired($dateExpired)
     {
         $expired_date = strtotime($dateExpired);
-        $notice = strtotime(date("Y-m-d", strtotime("-2 week", $expired_date)));
+        $notice = strtotime(date("Y-m-d", strtotime("-1 week", $expired_date)));
         $now = strtotime(date('Y-m-d'));
         if($now >= $expired_date){
-            $status = 'Expired';
+            $status = '<span class="badge bg-danger">Expired</span>';
         }else if($now >= $notice && $notice <= $expired_date){
             $datediff = $now-$expired_date; 
             $countDay = round($datediff / (60 * 60 * 24));
-            $status = 'Become Expired ('.-1 * $countDay.' more days)';
+            $status = '<span class="badge bg-warning">Become Expired ('.-1 * $countDay.' more days)</span>';
         }else{
-            $status = 'Not Expired';
+            $status = '<span class="badge bg-primary">Not Expired</span>';
         }
 
         return $status;
@@ -293,6 +217,33 @@ class ItemController extends Controller
         }
 
         return $jml_sold;
+    }
+
+    public function selectAdd(Request $request)
+    {
+        $check = Kategori::where('id_kategori',$request->input('nama_kategori'))->get();
+        if(count($check) == 0){
+            $kategori = new Kategori;
+            $kategori->nama_kategori = $request->input('nama_kategori');
+            if($kategori->save()){
+                $data = [
+                    'status' => 200,
+                    'id_kategori' => $kategori->id_kategori
+                ];
+            }else{
+                $data = [
+                    'status' => 400,
+                    'message' => 'Error insert kategori'
+                ];
+            }
+            
+        }else{
+            $data = [
+                'status' => 500,
+                'message' => $check
+            ];
+        }
+        return response($data);
     }
 
 }

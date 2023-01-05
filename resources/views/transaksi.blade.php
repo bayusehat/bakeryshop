@@ -12,20 +12,20 @@
             </ol>
             <div class="row">
                 @if(session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <div class="alert alert-success alert-dismissible alert-success" role="alert">
                         <strong>Sukses!</strong> {{ Session::get('success')}}
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        {{-- <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
-                        </button>
+                        </button> --}}
                     </div>
                     <br>
                 @endif
                 @if(session('error'))
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <strong>Gagal!</strong> {{ Session::get('error')}}
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        {{-- <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
-                        </button>
+                        </button> --}}
                     </div>
                 @endif
             </div>
@@ -58,20 +58,27 @@
                 @csrf
             <div class="row">
                 <div class="col-md-4">
-                    <div class="card mb-4">
+                    <div class="card mb-4 card-item">
                         <div class="card-header">
                             <i class="fas fa-inventory"></i>
                             Item
                         </div>
-                        <div class="card-body">
+                        <div class="card-body overflow-auto">
                             @foreach ($item as $a)
                                 <ul class="list-group mb-3">
                                     <a href="javascript:void(0)" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" onclick="addItem({{ $a->id_item }})">
                                     <div class="flex-column">
                                         {{ $a->nama_item }}
                                         <p><small>{{ $a->kategori->nama_kategori }}</small></p>
-                                        <span class="badge badge-info badge-pill text-primary"> {{ $a->stok_item }}</span>
-                                        <span class="badge badge-danger badge-pill text-danger">Rp {{ number_format($a->harga_item,0,'','.') }}</span>
+                                        <span class="badge badge-info badge-pill text-primary"> Stok : {{ $a->stok_item }}</span>
+                                        <span class="badge badge-danger badge-pill text-primary">Rp {{ number_format($a->harga_item,0,'','.') }}</span>
+                                        <span class="badge badge-warning badge-pill 
+                                        @if ($a->expired_item < date('Y-m-d'))
+                                            {{ 'text-danger'}}
+                                        @else
+                                            {{ 'text-success'}}
+                                        @endif
+                                        "> Exp. {{ date('d-m-Y',strtotime($a->expired_item)) }}</span>
                                     </div>
                                     <div class="image-parent">
                                         <img src="{{ asset('assets/assets/img/toast-bread-icon-design-free-vector.jpg') }}" class="img-fluid" style="width: 100px" alt="quixote">
@@ -143,7 +150,7 @@
             dataType : "JSON",
             success:function(res){
                 var qtyItem = $("#qty"+res.id_item);
-                var subtotal = res.harga_item * 1;
+                var subtotal = res.harga_item * 1 ;
                 var harga = $("#harga"+res.id_item).val();
                 if ($("#tableData tr td input.id[value='"+res.id_item+"']").length == 0 && qtyItem.length == 0){
                         $("#tableData").append(

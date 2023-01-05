@@ -2,6 +2,7 @@
     #btnUpdate, #btnCancel, #form{
         display: none;
     }
+    .select2-container{ width: 100% !important; }
 </style>
 <div id="layoutSidenav_content">
     <main>
@@ -24,7 +25,7 @@
                                 <div class="accordion-body">
                                     <ul>
                                         @foreach ($notif_expired as $item)
-                                            <li>Item {{ $item->nama_item }} {{ ItemController::checkExpired($item->expired_item) }}</li>
+                                            <li>Item {{ $item->nama_item }} {!! ItemController::checkExpired($item->expired_item) !!}</li>
                                         @endforeach
                                     </ul>
                                 </div>
@@ -53,8 +54,8 @@
                                     <small class="text-danger notif" id="err_nama_item"></small>
                                 </div>
                                 <div class="col-md-3">
-                                    <label for="">Kategori Item</label>
-                                    <select name="id_kategori" id="id_kategori" class="form-control">
+                                    <label for="">Kategori Item</label><br>
+                                    <select name="id_kategori" id="id_kategori" class="form-control select-cat">
                                         <option value="">-- Choose Kategori --</option>
                                         @foreach ($kategori as $v)
                                             <option value="{{ $v->id_kategori }}">{{ $v->nama_kategori }}</option>
@@ -119,6 +120,33 @@
 <script>
     $(document).ready(function(){
         loadData();
+        $('.select-cat').select2({
+            placeholder:'Select Category',
+            tags:true,
+            }).on('select2:close', function(){
+            var element = $(this);
+            var new_category = $.trim(element.val());
+
+            if(new_category != '')
+            {
+                $.ajax({
+                url:"{{ url('kategori/add') }}",
+                headers : {
+                'X-CSRF-TOKEN' : $('meta[name=csrf-token]').attr('content')
+                },
+                method:"POST",
+                data:{nama_kategori:new_category},
+                success:function(data)
+                {
+                    if(data.status == 200)
+                    {
+                    element.append('<option value="'+data.id_kategori+'">'+new_category+'</option>').val(data.id_kategori);
+                    }
+                }
+                })
+            }
+
+            });
     })
 
     var d = new Date();

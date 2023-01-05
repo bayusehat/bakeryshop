@@ -76,6 +76,10 @@
   }
 }
 
+.card-item{
+  height: 480px;
+}
+
 body {
   margin: 0;
   font-family: var(--bs-body-font-family);
