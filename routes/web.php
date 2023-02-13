@@ -54,4 +54,5 @@ Route::group(['middleware' => ['authLogin']], function () {
 
     Route::get('/calculate/{id}/{type}','App\Http\Controllers\TransaksiController@calculateStok');
     Route::post('/kategori/add','App\Http\Controllers\ItemController@selectAdd');
+    Route::get('/item/master/{id}','App\Http\Controllers\ItemController@item_master_detail');
 });

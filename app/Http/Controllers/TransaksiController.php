@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Item;
 use App\Models\Transaksi;
 use App\Models\TransaksiDetail;
+use App\Models\ItemMaster;
 use Datatables;
 
 class TransaksiController extends Controller
@@ -15,7 +16,7 @@ class TransaksiController extends Controller
         $data = [
             'title' => 'Transaksi',
             'content' => 'transaksi',
-            'item' => Item::with('kategori')->get()
+            'item' => Item::with('item_master.kategori')->get()
         ];
 
         return view('layout.index',['data' => $data]);
@@ -155,8 +156,10 @@ class TransaksiController extends Controller
                     ->addColumn('action', function($row){
      
                            $btn = '
+                           <div class="btn-group" role="group" aria-label="Basic example">
                            <a href="'.url('transaksi/edit/'.$row->id_transaksi).'" class="btn btn-primary"><i class="fas fa-edit"></i></a>
                            <a href="javascript:void(0)" class="btn btn-danger" onclick="deleteTransaksi('.$row->id_transaksi.')"><i class="fas fa-trash"></i></a>
+                           </div>
                            ';
        
                             return $btn;

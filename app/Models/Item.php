@@ -11,11 +11,11 @@ class Item extends Model
     use SoftDeletes;
     protected $table = 'items';
     protected $primaryKey = 'id_item';
-    protected $hidden = ['created_at', 'updated_at'];
+    protected $hidden = ['updated_at'];
 
     public $timestamps = true;
 
-    public function kategori(){
-        return $this->belongsTo('App\Models\Kategori', 'id_kategori');
+    public function item_master(){
+        return $this->hasOne('App\Models\ItemMaster', 'id_item_master');
     }
 }

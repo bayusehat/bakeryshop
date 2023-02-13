@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Kategori extends Model
 {
+    use HasFactory;
     use SoftDeletes;
     protected $table = 'kategoris';
     protected $primaryKey = 'id_kategori';
@@ -15,8 +16,8 @@ class Kategori extends Model
 
     public $timestamps = true;
 
-    public function item()
+    public function item_master()
     {
-        return $this->hasMany('App\Models\Item', 'id_kategori');
+        return $this->hasOne('App\Models\ItemMaster', 'id_kategori');
     }
 }

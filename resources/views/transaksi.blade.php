@@ -64,12 +64,15 @@
                             Item
                         </div>
                         <div class="card-body overflow-auto">
+                            {{-- @php
+                                dd($item);
+                            @endphp --}}
                             @foreach ($item as $a)
                                 <ul class="list-group mb-3">
                                     <a href="javascript:void(0)" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" onclick="addItem({{ $a->id_item }})">
                                     <div class="flex-column">
-                                        {{ $a->nama_item }}
-                                        <p><small>{{ $a->kategori->nama_kategori }}</small></p>
+                                        {{ $a->item_master->nama_item }}
+                                        <p><small>{{ $a->item_master->kategori->nama_kategori }}</small></p>
                                         <span class="badge badge-info badge-pill text-primary"> Stok : {{ $a->stok_item }}</span>
                                         <span class="badge badge-danger badge-pill text-primary">Rp {{ number_format($a->harga_item,0,'','.') }}</span>
                                         <span class="badge badge-warning badge-pill 

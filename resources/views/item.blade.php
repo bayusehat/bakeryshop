@@ -25,7 +25,7 @@
                                 <div class="accordion-body">
                                     <ul>
                                         @foreach ($notif_expired as $item)
-                                            <li>Item {{ $item->nama_item }} {!! ItemController::checkExpired($item->expired_item) !!}</li>
+                                            <li>{{ $item->item_master->nama_item }} {!! ItemController::checkExpired($item->expired_item) !!}</li>
                                         @endforeach
                                     </ul>
                                 </div>
@@ -49,13 +49,18 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-3">
-                                    <label for="">Nama Item</label>
-                                    <input type="text" name="nama_item" class="form-control" id="nama_item">
-                                    <small class="text-danger notif" id="err_nama_item"></small>
+                                    <label for="">Item</label>
+                                    <select name="id_item_master" id="id_item_master" class="form-control select2" onchange="getKategori(this)">
+                                        <option value="">-- Choose Item --</option>
+                                        @foreach ($item_master as $im)
+                                            <option value="{{ $im->id_item_master }}">{{ $im->nama_item }}</option>
+                                        @endforeach
+                                    </select>
+                                    <small class="text-danger notif" id="err_id_item_master"></small>
                                 </div>
                                 <div class="col-md-3">
                                     <label for="">Kategori Item</label><br>
-                                    <select name="id_kategori" id="id_kategori" class="form-control select-cat">
+                                    <select name="id_kategori" id="id_kategori" class="form-control select-cat" readonly>
                                         <option value="">-- Choose Kategori --</option>
                                         @foreach ($kategori as $v)
                                             <option value="{{ $v->id_kategori }}">{{ $v->nama_kategori }}</option>
@@ -73,7 +78,7 @@
                                     <input type="text" name="stok_item" class="form-control" id="stok_item">
                                     <small class="text-danger notif" id="err_stok_item"></small>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-3" style="display: none">
                                     <label for="">Expired Item</label>
                                     <input type="date" name="expired_item" class="form-control" id="expired_item">
                                     <small class="text-danger notif" id="err_expired_item"></small>
@@ -105,6 +110,7 @@
                                 <th>Stok</th>
                                 <th>Terjual</th>
                                 <th>Expired Item</th>
+                                <th>Created at</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -177,6 +183,7 @@
                 { name: 'stok_item', data: 'stok_item'},
                 { name: 'terjual', data: 'terjual'},
                 { name: 'expired_item', data: 'expired_item'},
+                { name: 'created_at', data: 'created_at'},
                 { name: 'check', data: 'check'},
                 { name: 'action', data: 'action' }
             ],
@@ -213,8 +220,8 @@
             method : 'GET',
             dataType : 'JSON',
             success:function(res){
-                $("#nama_item").val(res.nama_item);
-                $("#id_kategori").val(res.id_kategori).trigger('change');
+                $("#id_item_master").val(res.item_master.nama_item);
+                $("#id_kategori").val(res.item_master.kategori.nama_kategori).trigger('change');
                 $("#stok_item").val(res.stok_item);
                 $("#harga_item").val(res.harga_item);
                 $("#expired_item").val(res.expired_item);
@@ -230,7 +237,7 @@
                 'X-CSRF-TOKEN' : $('meta[name=csrf-token]').attr('content')
             },
             data : {
-                'nama_item' : $("#nama_item").val(),
+                'id_item_master' : $("#id_item_master").val(),
                 'id_kategori' : $("#id_kategori").val(),
                 'stok_item' : $("#stok_item").val(),
                 'harga_item' : $("#harga_item").val(),
@@ -260,7 +267,7 @@
                 'X-CSRF-TOKEN' : $('meta[name=csrf-token]').attr('content')
             },
             data : {
-                'nama_item' : $("#nama_item").val(),
+                'id_item_master' : $("#id_item_master").val(),
                 'id_kategori' : $("#id_kategori").val(),
                 'stok_item' : $("#stok_item").val(),
                 'harga_item' : $("#harga_item").val(),
@@ -270,6 +277,7 @@
             dataType : 'JSON',
             success:function(res){
                 if(res.status == 200){
+                    cancel();
                     $('#tableData').DataTable().ajax.reload(null, false);
                 }else if(res.status == 400){
                     $.each(res.errors, function (i, val) {
@@ -290,6 +298,23 @@
             success:function(res){
                 if(res.status == 200){
                     $('#tableData').DataTable().ajax.reload(null, false);
+                }else{
+                    alert(res.alert);
+                }
+            }
+        })
+    }
+
+    function getKategori(e){
+        var id = $(e).val();
+        console.log(id);
+        $.ajax({
+            url : "{{ url('item/master') }}/"+id,
+            method : 'GET',
+            dataType : 'JSON',
+            success:function(res){
+                if(res.status == 200){
+                    $("#id_kategori").val(res.data.id_kategori).trigger('change')
                 }else{
                     alert(res.alert);
                 }

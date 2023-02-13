@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Item;
 use App\Models\Kategori;
 use App\Models\TransaksiDetail;
+use App\Models\ItemMaster;
 use Illuminate\Support\Facades\Validator;
 use Datatables;
 
@@ -17,7 +18,8 @@ class ItemController extends Controller
             'title' => 'Item List',
             'content' => 'item',
             'kategori' => Kategori::all(),
-            'notif_expired' => Item::where('expired_item','>',date('Y-m-d'))->orderBy('expired_item','desc')->limit(5)->get()
+            'item_master' => ItemMaster::get(),
+            'notif_expired' => Item::with('item_master')->where('expired_item','>',date('Y-m-d'))->orderBy('expired_item','desc')->limit(5)->get()
         ];
 
         return view('layout.index',['data'=>$data]);
@@ -26,11 +28,14 @@ class ItemController extends Controller
     public function loadData(Request $request)
     {
         if ($request->ajax()) {
-            $data = Item::with('kategori');
+            $data = Item::with('item_master.kategori');
             return Datatables::of($data)
                     ->addIndexColumn()
+                    ->addColumn('nama_item', function($row){
+                        return $row->item_master->nama_item;
+                    })
                     ->addColumn('nama_kategori', function($row){
-                        return $row->kategori->nama_kategori;
+                        return $row->item_master->kategori->nama_kategori;
                     })
                     ->addColumn('harga',function($row){
                         return number_format($row->harga_item);
@@ -41,10 +46,19 @@ class ItemController extends Controller
                     ->addColumn('terjual', function($row){
                         return $this->itemSold($row->id_item);
                     })
+                    ->addColumn('created_at', function($row){
+                        return date('d/m/Y',strtotime($row->created_at));
+                    })
+                    ->addColumn('expired_item', function($row){
+                        return date('d/m/Y',strtotime($row->expired_item));
+                    })
                     ->addColumn('action', function($row){
      
-                           $btn = '<a href="javascript:void(0)" class="btn btn-primary" onclick="editItem('.$row->id_item.')"><i class="fas fa-edit"></i></a>
-                           <a href="javascript:void(0)" class="btn btn-danger" onclick="deleteItem('.$row->id_item.')"><i class="fas fa-trash"></i></a>';
+                           $btn = '
+                           <div class="btn-group" role="group" aria-label="Basic example">
+                           <a href="javascript:void(0)" class="btn btn-primary" onclick="editItem('.$row->id_item.')"><i class="fas fa-edit"></i></a>
+                           <a href="javascript:void(0)" class="btn btn-danger" onclick="deleteItem('.$row->id_item.')"><i class="fas fa-trash"></i></a>
+                           </div>';
        
                             return $btn;
                     })
@@ -65,11 +79,9 @@ class ItemController extends Controller
     public function insertItem(Request $request)
     {
         $rules = [
-            'nama_item' => 'required',
+            'id_item_master' => 'required',
             'stok_item' => 'required',
             'harga_item' => 'required',
-            'id_kategori' => 'required',
-            'expired_item' => 'required'
         ];
 
         $isValid = Validator::make($request->all(),$rules);
@@ -82,11 +94,12 @@ class ItemController extends Controller
         }else{
 
             $item = new Item;
-            $item->nama_item = $request->input('nama_item');
+            $item->id_item_master = $request->input('id_item_master');
             $item->stok_item = $request->input('stok_item');
             $item->harga_item = $request->input('harga_item');
-            $item->id_kategori = $request->input('id_kategori');
-            $item->expired_item = $request->input('expired_item');
+            $getExpired = ItemMaster::find($request->input('id_item_master'));
+            if($getExpired){ $expired = $getExpired->expired_day; }else{ $expired = 0; }
+            $item->expired_item = date('Y-m-d',strtotime("+$expired days"));
             $item->status_item = $this->checkExpired($request->input('expired_item'));
 
             if($item->save()){
@@ -105,17 +118,16 @@ class ItemController extends Controller
 
     public function editItem($id)
     {
-        $data = Item::find($id);
+        $data = Item::with('item_master.kategori')->find($id);
         return response($data);
     }
 
     public function updateItem(Request $request, $id)
     {
         $rules = [
-            'nama_item' => 'required',
+            'id_item_master' => 'required',
             'stok_item' => 'required',
             'harga_item' => 'required',
-            'id_kategori' => 'required',
             'expired_item' => 'required'
         ];
 
@@ -130,10 +142,8 @@ class ItemController extends Controller
 
             $item = Item::find($id);
             if($item){
-                $item->nama_item = $request->input('nama_item');
-                $item->id_kategori = $request->input('id_kategori');
+                $item->id_item_master = $request->input('id_item_master');
                 $item->harga_item = $request->input('harga_item');
-                $item->expired_item = $request->input('expired_item');
                 $item->stok_item = $request->input('stok_item');
                 $item->status_item = $this->checkExpired($request->input('expired_item'));
 
@@ -196,7 +206,9 @@ class ItemController extends Controller
         $notice = strtotime(date("Y-m-d", strtotime("-1 week", $expired_date)));
         $now = strtotime(date('Y-m-d'));
         if($now >= $expired_date){
-            $status = '<span class="badge bg-danger">Expired</span>';
+            $datediff = $expired_date-$now; 
+            $countDay = round($datediff / (60 * 60 * 24));
+            $status = '<span class="badge bg-danger">Has Been Expired for ('.-1* $countDay.' days)</span>';
         }else if($now >= $notice && $notice <= $expired_date){
             $datediff = $now-$expired_date; 
             $countDay = round($datediff / (60 * 60 * 24));
@@ -244,6 +256,22 @@ class ItemController extends Controller
             ];
         }
         return response($data);
+    }
+
+    public function item_master_detail($id)
+    {
+        $im = ItemMaster::with('kategori')->find($id);
+        if($im){
+            return response([
+                'status' => 200,
+                'data' => $im
+            ]);
+        }else{
+            return response([
+                'status' => 200,
+                'message' => 'Not found'
+            ]);
+        }
     }
 
 }

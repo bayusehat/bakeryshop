@@ -26,7 +26,7 @@ class AuthController extends Controller
             'password' => 'required'
         ];
 
-        $isValid = Validator::make($request->all(),$rules);
+        $isValid = Validator::make($request->all(),$rules);//validasi untuk login 
 
         if($isValid->fails()){
             return redirect()->back()->withErrors($isValid->errors());
