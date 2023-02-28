@@ -220,8 +220,8 @@
             method : 'GET',
             dataType : 'JSON',
             success:function(res){
-                $("#id_item_master").val(res.item_master.nama_item);
-                $("#id_kategori").val(res.item_master.kategori.nama_kategori).trigger('change');
+                $("#id_item_master").val(res.item_master.id_item_master).trigger('change');
+                $("#id_kategori").val(res.item_master.kategori.id_kategori).trigger('change');
                 $("#stok_item").val(res.stok_item);
                 $("#harga_item").val(res.harga_item);
                 $("#expired_item").val(res.expired_item);

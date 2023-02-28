@@ -158,10 +158,10 @@
                 if ($("#tableData tr td input.id[value='"+res.id_item+"']").length == 0 && qtyItem.length == 0){
                         $("#tableData").append(
                             "<tr>"+
-                                "<td>"+res.nama_item+"<input type='hidden' name='id_item[]' value='"+res.id_item+"' class='id'></td>"+
-                                "<td>"+res.kategori.nama_kategori+"<input type='hidden' name='id_kategori[]' value='"+res.id_kategori+"'></td>"+
+                                "<td>"+res.item_master.nama_item+"<input type='hidden' name='id_item[]' value='"+res.id_item+"' class='id'></td>"+
+                                "<td>"+res.item_master.kategori.nama_kategori+"<input type='hidden' name='id_kategori[]' value='"+res.item_master.id_kategori+"'></td>"+
                                 "<td><input type='hidden' name='harga_item[]' id='harga"+res.id_item+"' value='"+res.harga_item+"' class='harga'><span class='harga_sep"+res.id_item+"'></span></td>"+
-                                "<td><input type='number' name='qty[]' id='qty"+res.id_item+"' class='form-control form-control-sm qty' value='1' onkeyup='change_quantity()'></td>"+
+                                "<td><input type='text' name='qty[]' id='qty"+res.id_item+"' class='form-control form-control-sm qty' value='1' onkeyup='change_quantity(this)'></td>"+
                                 "<td><input type='hidden' name='subtotal[]' id='subtotal"+res.id_item+"' value="+subtotal+" class='form-control form-control-sm subtotal' readonly><span class='subtotal_sep"+res.id_item+"'></span></td>"+
                                 "<td><a href='javascript:void(0)' class='btn btn-danger deleteBtn'><i class='fas fa-trash'></i></a></td>"+
                             "<tr>"

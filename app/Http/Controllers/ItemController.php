@@ -103,6 +103,7 @@ class ItemController extends Controller
             $item->status_item = $this->checkExpired($request->input('expired_item'));
 
             if($item->save()){
+                history_stok($item->id_item, $item->stok_item, "CREATE ITEM", $item->id_item);
                 return response([
                     'status' => 200,
                     'message' => 'Item created successfully!'
@@ -192,11 +193,12 @@ class ItemController extends Controller
         $stok_update = $item->stok_item - $jml_item;
         $item->stok_item = $stok_update;
         $item->save();
+        history_stok($item->id_item, $stok_update, "UPDATE ITEM", $item->id_item);
     }
 
     public function getItem($id)
     {
-        $data = Item::with('kategori')->find($id);
+        $data = Item::with('item_master.kategori')->find($id);
         return response($data);
     }
 

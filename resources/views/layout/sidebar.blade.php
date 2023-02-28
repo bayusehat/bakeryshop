@@ -47,6 +47,10 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                             Transaksi
                         </a>
+                        <a class="nav-link" href="{{ url('history') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-list"></i></div>
+                            History
+                        </a>
                         {{-- <a class="nav-link" href="{{ url('report') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-file"></i></div>
                             Report

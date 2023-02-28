@@ -63,8 +63,8 @@
                 @csrf
             <div class="row">
                 <div class="col-md-4">
-                    <div class="card mb-4">
-                        <div class="card-header card-item">
+                    <div class="card mb-4 card-item">
+                        <div class="card-header">
                             <i class="fas fa-inventory"></i>
                             Item
                         </div>
@@ -74,7 +74,7 @@
                                     <a href="javascript:void(0)" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" onclick="addItem({{ $a->id_item }})">
                                         <div class="flex-column">
                                             {{ $a->nama_item }}
-                                            <p><small>{{ $a->kategori->nama_kategori }}</small></p>
+                                            <p><small>{{ $a->item_master->kategori->nama_kategori }}</small></p>
                                             <span class="badge badge-info badge-pill text-primary"> {{ $a->stok_item }}</span>
                                             <span class="badge badge-danger badge-pill text-primary">Rp {{ number_format($a->harga_item,0,'','.') }}</span>
                                             <span class="badge badge-warning badge-pill 
@@ -117,7 +117,7 @@
                                         @foreach ($transaksi_detail as $td)
                                             <tr>
                                                 <td>{{ $td->item->nama_item }}<input type='hidden' name='id_item[]' value='{{ $td->item->id_item }}' class='id'></td>
-                                                <td>{{ $td->item->kategori->nama_kategori }}<input type='hidden' name='id_kategori[]' value='{{ $td->item->kategori->id_kategori }}'></td>
+                                                <td>{{ $td->item->item_master->kategori->nama_kategori }}<input type='hidden' name='id_kategori[]' value='{{ $td->item->item_master->kategori->id_kategori }}'></td>
                                                 <td><input type='hidden' name='harga_item[]' id='harga{{ $td->item->id_item }}' value='{{ $td->item->harga_item }}' class='harga'><span id='harga_sep{{ $td->item->id_item }}' class='harga_sep{{ $td->item->id_item }}'>{{ number_format($td->item->harga_item,0,'','.') }}</span></td>
                                                 <td><input type='number' name='qty[]' id='qty{{ $td->item->id_item }}' class='form-control form-control-sm qty' value='{{ $td->qty }}' onkeyup='change_quantity()'></td>
                                                 <td><input type='hidden' name='subtotal[]' id='subtotal{{ $td->item->id_item }}' value="{{ $td->subtotal }}" class='form-control form-control-sm subtotal' readonly><span class='subtotal_sep{{ $td->item->id_item }}'>{{ number_format($td->subtotal,0,'','.') }}</span></td>
@@ -173,7 +173,7 @@
                         $("#tableData").append(
                             "<tr>"+
                                 "<td>"+res.nama_item+"<input type='hidden' name='id_item[]' value='"+res.id_item+"' class='id'></td>"+
-                                "<td>"+res.kategori.nama_kategori+"<input type='hidden' name='id_kategori[]' value='"+res.id_kategori+"'></td>"+
+                                "<td>"+res.item_master.kategori.nama_kategori+"<input type='hidden' name='id_kategori[]' value='"+res.item_master.kategori.id_kategori+"'></td>"+
                                 "<td><input type='hidden' name='harga_item[]' id='harga"+res.id_item+"' value='"+res.harga_item+"' class='harga'><span class='harga_sep"+res.id_item+"'></span></td>"+
                                 "<td><input type='number' name='qty[]' id='qty"+res.id_item+"' class='form-control form-control-sm qty' value='1' onkeyup='change_quantity()'></td>"+
                                 "<td><input type='hidden' name='subtotal[]' id='subtotal"+res.id_item+"' value="+subtotal+" class='form-control form-control-sm subtotal' readonly><span class='subtotal_sep"+res.id_item+"'></span></td>"+

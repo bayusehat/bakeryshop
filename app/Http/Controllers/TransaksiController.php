@@ -183,9 +183,9 @@ class TransaksiController extends Controller
         $data = [
             'title' => 'Edit Transaksi',
             'content' => 'transaksi_edit',
-            'item' => Item::with('kategori')->get(),
+            'item' => Item::with('item_master.kategori')->get(),
             'transaksi' => Transaksi::with('user')->find($id_transaksi),
-            'transaksi_detail' => TransaksiDetail::with('item.kategori')->where('id_transaksi',$id_transaksi)->get()
+            'transaksi_detail' => TransaksiDetail::with('item.item_master.kategori')->where('id_transaksi',$id_transaksi)->get()
         ];
 
         return view('layout.index',['data' => $data]);
@@ -271,6 +271,7 @@ class TransaksiController extends Controller
                 $stok_now = $update->stok_item - $is->qty;
                 $update->stok_item = $stok_now;
                 $update->save();
+                history_stok($is->id_item, $stok_now, "TRANSAKSI", $id_transaksi);
             }
         }
 
@@ -281,6 +282,7 @@ class TransaksiController extends Controller
                 $stok_now = $update->stok_item + $isd->qty;
                 $update->stok_item = $stok_now;
                 $update->save();
+                history_stok($isd->id_item, $stok_now, "DELETE TRANSAKSI", $id_transaksi);
             }
         }
     }
